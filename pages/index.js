@@ -18,6 +18,10 @@ const mapStateToProps=state=>{
     ...state
   }
 }
+Home.getInitialProps= async ({reduxStore})=>{
+  reduxStore.dispatch(addClick())
+  return {}
+}
 const mapDispatchToProps=dispatch=>
   bindActionCreators({addClick,decClick},dispatch)
 

@@ -6,7 +6,6 @@ import 'antd/dist/antd.css'
 class MyApp extends App {
     render() {
         const { Component, pageProps, reduxStore } = this.props
-        console.log(reduxStore,'store');
         return (
             <Container>
                 <Provider store={reduxStore}>
