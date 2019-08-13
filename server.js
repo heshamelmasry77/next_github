@@ -4,7 +4,7 @@ const Router=require('koa-router');
 const session=require('koa-session');
 const RedisSessionStore=require('./server/session-store')
 const Redis=require('ioredis');
-
+const oauth =require('./server/oauth')
 const port=process.env.PORT||3000
 const dev=process.env.NODE_ENV!=='production'
 const app=next({dev})
@@ -21,18 +21,12 @@ app.prepare().then(()=>{
         store:new RedisSessionStore(redis)
     }
     server.use(session(SESSION_CONFIG,server));
-
+    oauth(server);
     router.get('/a/:id',async ctx=>{
         console.log(ctx.query,'query');
         await app.render(ctx.req,ctx.res,'/a',ctx.query)
         ctx.respond=false
     })
-    router.get('/oauth',async ctx=>{
-        console.log(ctx.query,'query')
-        ctx.cookies.set('ass_code',ctx.query.code);
-        await app.render(ctx.req,ctx.res,'/');
-    })
-    
     router.get('/set/user',async ctx=>{
         ctx.session.user={
             name:'cc',
