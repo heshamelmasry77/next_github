@@ -22,7 +22,8 @@ module.exports = (server) => {
                         }
                     }).then(response => response.json())
                     ctx.session.userInfo = user;
-                    ctx.redirect('/');
+                    //跳转到用户之前进入授权页面
+                    ctx.redirect((ctx.session && ctx.session.urlBeforeOAuth) || '/');
                     // ctx.body='ok'
                 }
             } catch (error) {
@@ -36,10 +37,20 @@ module.exports = (server) => {
     server.use(async (ctx, next) => {
         const { path, method } = ctx;
         if (path === '/logout' && method === 'POST') {
-            ctx.session=null;
-            ctx.body={status:200}
-        }else{
+            ctx.session = null;
+            ctx.body = { status: 200 }
+        } else {
             await next()
+        }
+    })
+    //记录用户授权之前的页面地址
+    server.use(async (ctx, next) => {
+        const { path, query: { url } } = ctx;
+        if (path === '/prepare-auth') {
+            ctx.session.urlBeforeOAuth = url;
+            ctx.body = { status: 200 };
+        } else {
+            await next();
         }
     })
 }

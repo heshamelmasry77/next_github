@@ -1,4 +1,5 @@
 import { useCallback, useState } from 'react'
+import {withRouter} from 'next/router'
 import { Layout, Icon, Input, Avatar, Dropdown, Menu, Tooltip } from 'antd'
 import Container from '../components/container'
 import { connect } from 'react-redux'
@@ -14,7 +15,7 @@ const githubIconStyle = {
     marginRight: 20
 }
 
-function MyLayout({ user, logout, ...props }) {
+function MyLayout({ user, logout,router, ...props }) {
     const [searchValue, setSearchValue] = useState('');
 
     const handleSearch = useCallback((event) => {
@@ -23,7 +24,14 @@ function MyLayout({ user, logout, ...props }) {
     const handleLogout = useCallback(() => {
         logout();
     }, [])
-
+    const handlePrepareAuth=useCallback(async (event)=>{
+        event.preventDefault();
+        const resp=await fetch(`/prepare-auth?url=${router.asPath}`)
+        .then(res=>res.json())
+        if(resp.status===200){
+            window.location=githubConfig.oauth_url
+        }
+    },[])
     const menu = (
         <Menu>
             <Menu.Item>
@@ -51,7 +59,7 @@ function MyLayout({ user, logout, ...props }) {
                                 </Dropdown>
                                 :
                                 <Tooltip title='点击登录'>
-                                    <a href={githubConfig.oauth_url}><Avatar icon='user' size={40} /></a>
+                                    <a href={githubConfig.oauth_url} onClick={handlePrepareAuth}><Avatar icon='user' size={40} /></a>
                                 </Tooltip>
                         }
                     </div>
@@ -112,4 +120,4 @@ const mapDispatchProps = (dispatch) => {
         logout: () => dispatch(logout())
     }
 }
-export default connect(mapStateProps, mapDispatchProps)(MyLayout)
+export default connect(mapStateProps, mapDispatchProps)(withRouter(MyLayout))
