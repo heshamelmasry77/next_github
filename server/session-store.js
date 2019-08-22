@@ -44,5 +44,5 @@ class RedisSessionStore {
 module.exports=RedisSessionStore
 
 function getRedisSessionId(sid) {
-    return `ssid:${sid}`
+    return `github:${sid}`
 }

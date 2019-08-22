@@ -1,26 +1,66 @@
-import { Layout, Icon, Input } from 'antd'
+import { useCallback, useState } from 'react'
+import { Layout, Icon, Input, Avatar, Dropdown, Menu, Tooltip } from 'antd'
+import Container from '../components/container'
+import { connect } from 'react-redux'
+import githubConfig from '../github.config'
+import { logout } from '../store/store'
 const { Header, Content, Footer } = Layout
-export default function MyLayout(props) {
+
+const githubIconStyle = {
+    color: 'white',
+    fontSize: 40,
+    display: 'block',
+    paddingTop: 10,
+    marginRight: 20
+}
+
+function MyLayout({ user, logout, ...props }) {
+    const [searchValue, setSearchValue] = useState('');
+
+    const handleSearch = useCallback((event) => {
+        setSearchValue(event.target.value);
+    }, [searchValue]);
+    const handleLogout = useCallback(() => {
+        logout();
+    }, [])
+
+    const menu = (
+        <Menu>
+            <Menu.Item>
+                <a href='javascript:void(0)' onClick={handleLogout}>退出</a>
+            </Menu.Item>
+        </Menu>
+    )
     return (
         <Layout>
             <Header>
-                <div className="container">
+                <Container comp={<div className="container" />}>
                     <div className='content-left'>
                         <div className='logo'>
-                            <Icon type='github'/>
+                            <Icon type='github' style={githubIconStyle} />
                         </div>
                         <div className="search">
-                            <Input.Search />
+                            <Input.Search value={searchValue} onChange={handleSearch} />
                         </div>
                     </div>
                     <div className="content-right">
-                        icon
+                        {
+                            user && user.id ?
+                                <Dropdown overlay={menu}>
+                                    <a href='#'><Avatar src={user.avatar_url} size={40} /></a>
+                                </Dropdown>
+                                :
+                                <Tooltip title='点击登录'>
+                                    <a href={githubConfig.oauth_url}><Avatar icon='user' size={40} /></a>
+                                </Tooltip>
+                        }
                     </div>
-                </div>
-
+                </Container>
             </Header>
             <Content>
-                {props.children}
+                <Container style={{ color: 'red' }}>
+                    {props.children}
+                </Container>
             </Content>
             <Footer style={{ textAlign: 'center' }}>
                 next@2019 Created by CC <a href='mailto:chenorange12@gamil.com'>chenorange12@gmail.com</a>
@@ -57,8 +97,19 @@ export default function MyLayout(props) {
                 .ant-layout{
                     height:100vh;
                 }
+                .ant-layout-header{
+                    padding-left: 0;
+                    padding-right:0;
+                }
             `}
             </style>
         </Layout>
     )
 }
+const mapStateProps = (state) => ({ user: state.user })
+const mapDispatchProps = (dispatch) => {
+    return {
+        logout: () => dispatch(logout())
+    }
+}
+export default connect(mapStateProps, mapDispatchProps)(MyLayout)

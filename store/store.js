@@ -1,42 +1,42 @@
-import {createStore,applyMiddleware} from 'redux'
+import { createStore, applyMiddleware, combineReducers } from 'redux'
 import thunk from 'redux-thunk'
-import {composeWithDevTools} from 'redux-devtools-extension'
-const initialCount={
-    count:1
-};
+import { composeWithDevTools } from 'redux-devtools-extension'
 
-export const actionTypes={
-    ADD:'ADD',
-    DEC:'DEC'
-} 
+//initState
+const initUserState = {};
 
-//reducers
-function reduce(state,action){
+//actions type
+const LOGOUT = 'LOGOUT';
+
+function userReducer(state = initUserState, action) {
     switch (action.type) {
-        case actionTypes.ADD:
-             return {count:state.count+1}    
-        case actionTypes.DEC:
-            return {count:state.count-1}
+        case LOGOUT:
+            return {};
         default:
-            return state
+            return state;
     }
 }
+//action creatore
+export function logout() {
+    return async dispatch => {
+        const resp = await fetch('/logout', { method: 'post' }).then(resp=>resp.json());
+        if (resp.status === 200) {
+            dispatch({
+                type: LOGOUT
+            })
+        } else {
+            console.warn('logout error', resp);
 
-//actions
-export const addClick=()=>{
-    return {type:actionTypes.ADD}
+        }
+    }
 }
-export const decClick=()=>{
-    return {type:actionTypes.DEC}
-}
-
-// export const store=createStore(reduce,initialCount,composeWithDevTools(applyMiddleware(thunk)));
-
-//保证store对象是独一无二的，不会被重用
-export function initializeStore(initialState=initialCount){
+const allReducers = combineReducers({
+    user: userReducer
+})
+export function initializeStore(state) {
     return createStore(
-        reduce,
-        initialState,
+        allReducers,
+        { user: initUserState, ...state },
         composeWithDevTools(applyMiddleware(thunk))
     )
 }
