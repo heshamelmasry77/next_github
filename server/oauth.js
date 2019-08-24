@@ -22,6 +22,7 @@ module.exports = (server) => {
                         }
                     }).then(response => response.json())
                     ctx.session.userInfo = user;
+                    ctx.session.githubAuth={access_token,token_type}
                     //跳转到用户之前进入授权页面
                     ctx.redirect((ctx.session && ctx.session.urlBeforeOAuth) || '/');
                     //清空 url

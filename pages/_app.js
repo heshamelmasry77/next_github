@@ -26,12 +26,19 @@ class MyApp extends App {
        Router.events.on('routeChangeStart',this.startLoading);
        Router.events.on('routeChangeComplete',this.stopLoading)
        Router.events.on('routeChangeError',this.stopLoading)
+
+       this.fetchData();
     }
+
     componentWillUnmount(){
         Router.events.off('routeChangeStart',this.startLoading);
         Router.events.off('routeChangeComplete',this.stopLoading)
         Router.events.off('routeChangeError',this.stopLoading)
     }
+     fetchData= async ()=>{
+        const result=await fetch('/github/search/repositories?q=react').then(resp=>resp.json())
+        console.log(result,'result fetch search data ');
+     }
     render() {
         const { Component, pageProps, reduxStore } = this.props
         return (

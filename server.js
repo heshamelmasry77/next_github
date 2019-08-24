@@ -5,6 +5,7 @@ const session = require('koa-session');
 const RedisSessionStore = require('./server/session-store')
 const Redis = require('ioredis');
 const oauth = require('./server/oauth')
+const githubAPI =require('./server/api')
 const port = process.env.PORT || 3000
 const dev = process.env.NODE_ENV !== 'production'
 const app = next({ dev })
@@ -23,7 +24,7 @@ app.prepare().then(() => {
     server.use(session(SESSION_CONFIG, server));
 
     oauth(server);
-
+    githubAPI(server);
     // router.get('/a/:id',async ctx=>{
     //     await app.render(ctx.req,ctx.res,'/a',ctx.query)
     //     ctx.respond=false
