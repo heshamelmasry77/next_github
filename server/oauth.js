@@ -24,6 +24,8 @@ module.exports = (server) => {
                     ctx.session.userInfo = user;
                     //跳转到用户之前进入授权页面
                     ctx.redirect((ctx.session && ctx.session.urlBeforeOAuth) || '/');
+                    //清空 url
+                    ctx.session.urlBeforeOAuth=null;
                     // ctx.body='ok'
                 }
             } catch (error) {
