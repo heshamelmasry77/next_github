@@ -1,4 +1,5 @@
 const Koa = require('koa');
+const koaBody=require('koa-body')
 const next = require('next');
 const Router = require('koa-router');
 const session = require('koa-session');
@@ -15,14 +16,13 @@ const redis = new Redis();
 app.prepare().then(() => {
     const server = new Koa();
     const router = new Router()
-
     server.keys = ['cc develop github app'];
     const SESSION_CONFIG = {
         key: 'koa:github',
         store: new RedisSessionStore(redis)
     }
     server.use(session(SESSION_CONFIG, server));
-
+    server.use(koaBody())
     oauth(server);
     githubAPI(server);
     // router.get('/a/:id',async ctx=>{

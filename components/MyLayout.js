@@ -1,5 +1,6 @@
 import { useCallback, useState } from 'react'
 import {withRouter} from 'next/router'
+import Link from 'next/link'
 import { Layout, Icon, Input, Avatar, Dropdown, Menu, Tooltip } from 'antd'
 import Container from '../components/container'
 import { connect } from 'react-redux'
@@ -16,14 +17,23 @@ const githubIconStyle = {
 }
 
 function MyLayout({ user, logout,router, ...props }) {
-    const [searchValue, setSearchValue] = useState('');
+    const urlQuery=router.query&&router.query.search;
+    const [search,setSearch]=useState(urlQuery || '');
 
-    const handleSearch = useCallback((event) => {
-        setSearchValue(event.target.value);
-    }, [searchValue]);
+    const handleOnSearch=useCallback((value,event)=>{
+        router.push(`/search?search=${value}`)
+        console.log(value)
+
+    },[])
+
+    const handleSearchChange=useCallback((event)=>{
+        setSearch(event.target.value);
+    },[search])
+
     const handleLogout = useCallback(() => {
         logout();
     }, [])
+
     const handlePrepareAuth=useCallback(async (event)=>{
         event.preventDefault();
         const resp=await fetch(`/prepare-auth?url=${router.asPath}`)
@@ -45,10 +55,17 @@ function MyLayout({ user, logout,router, ...props }) {
                 <Container comp={<div className="container" />}>
                     <div className='content-left'>
                         <div className='logo'>
-                            <Icon type='github' style={githubIconStyle} />
+                            <Link href='/'>
+                               <Icon type='github' style={githubIconStyle} />
+                            </Link>
                         </div>
                         <div className="search">
-                            <Input.Search value={searchValue} onChange={handleSearch} />
+                            <Input.Search
+                            value={search}
+                            onChange={handleSearchChange}
+                            onSearch={handleOnSearch}                            
+                            placeholder='搜索仓库' 
+                            />
                         </div>
                     </div>
                     <div className="content-right">
@@ -103,11 +120,15 @@ function MyLayout({ user, logout,router, ...props }) {
                     width:100vw;
                 }
                 .ant-layout{
-                    height:100vh;
+                    /* height:100vh; */
+                    min-height:100vh;
                 }
                 .ant-layout-header{
                     padding-left: 0;
                     padding-right:0;
+                }
+                .ant-layout-content{
+                    backgroundColor: #FFFFFF
                 }
             `}
             </style>
