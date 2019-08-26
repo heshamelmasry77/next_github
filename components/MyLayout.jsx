@@ -2,7 +2,7 @@ import { useCallback, useState } from 'react'
 import {withRouter} from 'next/router'
 import Link from 'next/link'
 import { Layout, Icon, Input, Avatar, Dropdown, Menu, Tooltip } from 'antd'
-import Container from '../components/container'
+import Container from './container'
 import { connect } from 'react-redux'
 import githubConfig from '../github.config'
 import { logout } from '../store/store'
@@ -83,7 +83,7 @@ function MyLayout({ user, logout,router, ...props }) {
                 </Container>
             </Header>
             <Content>
-                <Container style={{ color: 'red' }}>
+                <Container style={{ }}>
                     {props.children}
                 </Container>
             </Content>
@@ -135,10 +135,10 @@ function MyLayout({ user, logout,router, ...props }) {
         </Layout>
     )
 }
-const mapStateProps = (state) => ({ user: state.user })
-const mapDispatchProps = (dispatch) => {
+const mapStateToProps = (state) => ({ user: state.user })
+const mapDispatchToProps = (dispatch) => {
     return {
         logout: () => dispatch(logout())
     }
 }
-export default connect(mapStateProps, mapDispatchProps)(withRouter(MyLayout))
+export default connect(mapStateToProps, mapDispatchToProps)(withRouter(MyLayout))

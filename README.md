@@ -63,3 +63,85 @@ if(tokenResponse&&tokenResponse.access_token){
 }
 ```
 
+# 客户端数据缓存
+## 使用全局变量
+定义全局变量，当数据不是从服务端请求时我们就记住请求的值
+优点：
+-  简单使用
+缺点：
+- 第一次服务端请求不能被缓存，要多发一次
+- 一旦缓存,不能根据用户使用设置过期时间(只能设置固定失效时间)
+
+```javascript
+let cacheUserRepos,cacheStarredRepos;
+const isServer=typeof window ==='undefined'
+const HomePage=({userRepos,userStarredRepos})=>{
+    useEffect(()=>{
+        if(!isServer){
+            cacheUserRepos=userRepos;
+            cacheStarredRepos=userStarredRepos;
+        }
+        //设置失效时间
+        const timeId= setTimeout(() => {
+            cacheUserRepos=null;
+            cacheStarredRepos=null;
+        },100*60);
+    return ()=>{
+        clearTimeout(timeId)
+    }
+    },[userRepos,userStarredRepos])
+}
+HomePage.getInitialProps = async ({ req, res }) => {
+    if(!isServer){
+        if(cacheUserRepos&&cacheStarredRepos){
+            return{
+                userRepos:cacheUserRepos,
+                userStarredRepos:cacheStarredRepos
+            }
+        }
+    }
+    const userRepos= await fetch(...)
+    const userStarredRepos=await fetch(...)
+    return {
+        userRepos,
+        userStarredRepos
+    }
+ ...
+}
+```
+## lru-cache
+
+> npm i lru-cache  --save
+
+```javascript
+import LRU from 'lru-cache'
+onst options = {
+    maxAge: 1000 * 60 * 10,
+}
+const cache = new LRU(options);
+const isServer = typeof window === 'undefined'
+
+ //其它代码与上面一致
+useEffect(() => {
+    if (!isServer) {
+        if (userRepos && userStarredRepos) {
+            cache.set('cahceRepos', { userRepos, userStarredRepos })
+        }
+    }
+}, [userRepos, userStarredRepos])
+
+
+HomePage.getInitialProps = async ({ req, res }) => {
+    if (!isServer) {
+        const repos = cache.get('cahceRepos');
+        if (repos && repos.userRepos && repos.userStarredRepos) {
+            const { userRepos, userStarredRepos } = repos;
+            return {
+                userRepos,
+                userStarredRepos
+           }
+        }
+    }
+    //...
+}
+```

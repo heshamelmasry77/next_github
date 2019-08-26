@@ -27,7 +27,7 @@ class MyApp extends App {
         Router.events.on('routeChangeComplete', this.stopLoading)
         Router.events.on('routeChangeError', this.stopLoading)
 
-        this.fetchData();
+        // this.fetchData();
     }
 
     componentWillUnmount() {

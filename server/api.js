@@ -5,9 +5,8 @@ const github_base_url = 'https://api.github.com'
 module.exports = (server) => {
     server.use(async (ctx, next) => {
         const {path,method,url} = ctx;
-
         if (path.startsWith('/github/')) {
-            const githubPath = `${url.replace('/github/', '/')}`;
+            const githubPath = url.replace('/github/', '/');
             const githubAuth = ctx.session.githubAuth || {};
             const headers={};
             if(githubAuth.access_token){
@@ -16,7 +15,7 @@ module.exports = (server) => {
             try {
                 const result= await reqestGithub(method,githubPath,ctx.request.body,headers)
                 if (result) {
-                    ctx.body = { ...result }
+                    ctx.body = result
 
                 } else {
                     ctx.body = {
