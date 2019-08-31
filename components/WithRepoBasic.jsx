@@ -3,25 +3,39 @@ import Repo from './Repo'
 import Link from 'next/link';
 import api from '../lib/api'
 
-export default (Comp)=>{
- const Detail = ({ repoBaisc,...props }) => {
+export default (Comp, type = 'index') => {
+    const Detail = ({ repoBaisc, ...props }) => {
         const router = useRouter();
         // console.log(router, 'router')
-        const query=makeQuery(router.query);
+        const query = makeQuery(router.query);
         return (
             <div className="root">
                 <div className="repo-baisc">
                     <div className="tabs">
                         <Repo {...repoBaisc} />
-                        <Link href={`/detail?${query}`}>
-                            <a className="tab index">Readme</a>
-                        </Link>
-                        <Link href={`/detail/issues?${query}`}>
-                            <a className="tab issues">Issues</a>
-                        </Link>
+                        {
+                            type === 'index' ?
+                                (<span className="tab">Readme</span>)
+                                :
+                                (
+                                    <Link href={`/detail?${query}`}>
+                                        <a className="tab index">Readme</a>
+                                    </Link>
+                                )
+                        }
+                        {
+                            type === 'issues' ?
+                                (<span className="tab">Issues</span>)
+                                : (
+                                    <Link href={`/detail/issues?${query}`}>
+                                        <a className="tab issues">Issues</a>
+                                    </Link>
+                                )
+                        }
+
                     </div>
                 </div>
-                <Comp {...props}/>
+                <Comp {...props} />
                 <style jsx>{`
                     .root{
                         padding-top:20px;
@@ -45,9 +59,9 @@ export default (Comp)=>{
     Detail.getInitialProps = async (ctx) => {
         const { req, res, query } = ctx;
         const { owner, name } = query
-        let props={};
-        if(Comp.getInitialProps){
-             props=await Comp.getInitialProps(ctx);
+        let props = {};
+        if (Comp.getInitialProps) {
+            props = await Comp.getInitialProps(ctx);
         }
         const result = await api.request({ url: `/repos/${owner}/${name}` }, req, res)
         return {
@@ -59,6 +73,6 @@ export default (Comp)=>{
 }
 function makeQuery(queryObject) {
     return Object.entries(queryObject)
-    .reduce((acc, cur) => ([...acc, cur.join('=')]), [])
-    .join('&');   
+        .reduce((acc, cur) => ([...acc, cur.join('=')]), [])
+        .join('&');
 }

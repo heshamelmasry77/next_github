@@ -8,4 +8,4 @@ ReadMe.getInitialProps=async()=>{
         text:123
     }
 }
-export default WithRepoBasic(ReadMe)
+export default WithRepoBasic(ReadMe,'index')
