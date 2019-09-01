@@ -145,3 +145,34 @@ HomePage.getInitialProps = async ({ req, res }) => {
     //...
 }
 ```
+
+
+# 解码 base64与显示 markdown
+
+在浏览器端，可以通过 `atob` 将 二进制转换字符串;通过 `btoa` 将字符串编码 base64
+```js
+//base64 -> utf-8
+decodeURIComponent(escape(atob(str)))
+```
+## markdown-it
+```jsx
+import markdownIt from 'markdown-it'
+import 'github-markdown-css'
+const md = new markdownIt({
+    html: true,
+    linkify: true
+});
+
+function b64_to_uft8(str) {
+    return decodeURIComponent(escape(atob(str)))
+}
+const MDRenderer = ({ content, isBase64 }) => {
+    const markdown=isBase64?b64_to_uft8(content):content
+    const html = useMemo(()=>md.render(markdown),[markdown])
+    return (
+        <div className="markdown-body">
+            <div dangerouslySetInnerHTML={{ __html: html }} />
+        </div>)
+}
+export default memo(MDRenderer)
+```

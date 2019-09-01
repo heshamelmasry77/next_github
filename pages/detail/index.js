@@ -1,11 +1,17 @@
 import WithRepoBasic from '../../components/WithRepoBasic'
+import MdRenderer from '../../components/MarkdownRender'
+import api from '../../lib/api'
 
-const ReadMe = ({text}) => {
-  return <div>readme {text}</div>
+
+
+const ReadMe = ({ readme }) => {
+  return (<MdRenderer content={readme.content} isBase64 />)
 }
-ReadMe.getInitialProps=async()=>{
-    return {
-        text:123
-    }
+ReadMe.getInitialProps = async ({ req, res, query }) => {
+  const { owner, name } = query;
+  const result = await api.request({ url: `/repos/${owner}/${name}/readme` }, req, res)
+  return {
+    readme: result
+  }
 }
-export default WithRepoBasic(ReadMe,'index')
+export default WithRepoBasic(ReadMe, 'index')

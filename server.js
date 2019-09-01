@@ -1,6 +1,7 @@
 const Koa = require('koa');
 const koaBody=require('koa-body')
 const next = require('next');
+const atob=require('atob')
 const Router = require('koa-router');
 const session = require('koa-session');
 const RedisSessionStore = require('./server/session-store')
@@ -12,6 +13,8 @@ const dev = process.env.NODE_ENV !== 'production'
 const app = next({ dev })
 const handle = app.getRequestHandler();
 const redis = new Redis();
+//将atob 添加全局环境
+global.atob=atob;
 
 app.prepare().then(() => {
     const server = new Koa();
