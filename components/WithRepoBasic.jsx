@@ -1,10 +1,19 @@
+import { useEffect } from 'react'
 import { useRouter } from 'next/router'
 import Repo from './Repo'
 import Link from 'next/link';
 import api from '../lib/api'
+import { getCache, setCache } from '../lib/repo-cache'
+const isServer = typeof window === 'undefined'
 
 export default (Comp, type = 'index') => {
     const Detail = ({ repoBaisc, ...props }) => {
+        useEffect(() => {
+            if (!isServer) {
+                setCache(repoBaisc)
+            }
+        }, [repoBaisc])
+
         const router = useRouter();
         // console.log(router, 'router')
         const query = makeQuery(router.query);
@@ -59,11 +68,24 @@ export default (Comp, type = 'index') => {
     Detail.getInitialProps = async (ctx) => {
         const { req, res, query } = ctx;
         const { owner, name } = query
+        const full_name = `${owner}/${name}`
         let props = {};
         if (Comp.getInitialProps) {
             props = await Comp.getInitialProps(ctx);
         }
+        //判断客户端缓存是否存在
+        if (!isServer) {
+            const cacheResult = getCache(full_name)
+            if (cacheResult) {
+                return {
+                    ...props,
+                    repoBaisc: cacheResult
+                }
+            }
+        }
+
         const result = await api.request({ url: `/repos/${owner}/${name}` }, req, res)
+
         return {
             ...props,
             repoBaisc: result,

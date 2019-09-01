@@ -1,16 +1,12 @@
 import { useCallback, useEffect } from 'react';
 import { Button, Icon, Tabs } from 'antd'
 import { connect } from 'react-redux'
-import LRU from 'lru-cache'
 import { withRouter } from 'next/router'
 import Repo from '../components/Repo'
 import githubConfig from '../github.config'
 import api from '../lib/api'
+import {setnameCache,getCache,setCacheArray} from '../lib/repo-cache'
 
-const options = {
-    maxAge: 1000 * 60 * 10,
-}
-const cache = new LRU(options);
 const isServer = typeof window === 'undefined'
 const HomePage = ({ user, userRepos = [], userStarredRepos = [], router }) => {
     const tabKey = router.query.key || '1';
@@ -20,7 +16,9 @@ const HomePage = ({ user, userRepos = [], userStarredRepos = [], router }) => {
     useEffect(() => {
         if (!isServer) {
             if (userRepos && userStarredRepos) {
-                cache.set('cahceRepos', { userRepos, userStarredRepos })
+                setCacheArray(userRepos)
+                setCacheArray(userStarredRepos)
+                setnameCache('cahceIndexRepos',{userRepos,userStarredRepos})
             }
         }
         
@@ -111,8 +109,9 @@ const HomePage = ({ user, userRepos = [], userStarredRepos = [], router }) => {
 }
 
 HomePage.getInitialProps = async ({ req, res }) => {
+
     if (!isServer) {
-        const repos = cache.get('cahceRepos');
+        const repos = getCache('cahceIndexRepos');
         if (repos && repos.userRepos && repos.userStarredRepos) {
             const { userRepos, userStarredRepos } = repos;
             return {

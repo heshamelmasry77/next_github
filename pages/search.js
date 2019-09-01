@@ -4,8 +4,7 @@ import Repo from '../components/Repo'
 import Router, { withRouter } from 'next/router'
 import Link from 'next/link'
 import api from '../lib/api'
-import { number } from 'prop-types';
-
+import {getCache,setCacheArray } from '../lib/repo-cache'
 /**
  * 搜索仓库页面
  * q: 关键字
@@ -42,6 +41,8 @@ const selectItemStyle = {
     borderRight: '2px solid #1890ff',
     color: '#ccc'
 }
+const isServer=typeof window === 'undefined'
+
 const ItemLink = memo(({ name, search, lang, sort, order, page }) => {
     let queryString = `?search=${search}`;
     if (lang) queryString += `&lang=${lang}`
@@ -59,6 +60,12 @@ const ItemLink = memo(({ name, search, lang, sort, order, page }) => {
 
 const SearchPage = ({ router, repos = [] ,total=0}) => {
     const { ...querys } = router.query
+    useEffect(()=>{
+        if(!isServer){
+            setCacheArray(repos)
+        }
+    },[repos])
+    
     return (
         <div className="root">
             <Row gutter={24}>
