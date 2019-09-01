@@ -128,7 +128,7 @@ function MyLayout({ user, logout,router, ...props }) {
                     padding-right:0;
                 }
                 .ant-layout-content{
-                    backgroundColor: #FFFFFF
+                    background-color: #FFFFFF
                 }
             `}
             </style>

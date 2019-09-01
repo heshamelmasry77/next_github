@@ -1,7 +1,6 @@
 import Link from 'next/link'
 import { Icon} from 'antd'
-import relativeTime from 'dayjs/plugin/relativeTime'
-import dayjs from 'dayjs'
+import {getLastUpdated} from '../lib/utils'
 
 export default ({
     name, owner,
@@ -66,8 +65,4 @@ export default ({
 }
 function getLicense(license) {
     return license ? `${license.spdx_id} License` : ''
-}
-function getLastUpdated(time){
-    dayjs.extend(relativeTime)
-    return dayjs(time).fromNow()
 }

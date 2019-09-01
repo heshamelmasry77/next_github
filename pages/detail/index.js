@@ -1,8 +1,11 @@
+import dynamic from 'next/dynamic'
+import {Spin} from 'antd'
 import WithRepoBasic from '../../components/WithRepoBasic'
-import MdRenderer from '../../components/MarkdownRender'
 import api from '../../lib/api'
 
-
+const MdRenderer=dynamic(()=>import('../../components/MarkdownRender'),{
+  loading:<Spin/>
+})
 
 const ReadMe = ({ readme }) => {
   return (<MdRenderer content={readme.content} isBase64 />)
