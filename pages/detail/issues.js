@@ -1,8 +1,15 @@
 import WithRepoBasic from '../../components/WithRepoBasic'
 import IssuesItem from '../../components/IssuesItem'
+import SeachUser from '../../components/SearchUser'
 import api from '../../lib/api'
+import { useState, useEffect, useCallback } from 'react';
 const Issues=({issues})=>{
+    const [value,setValue]=useState('');
+    const handleChange=useCallback((value)=>{
+        setValue(value)
+    },[])
     return(<div className="root">
+        <SeachUser onChange={handleChange} value={value}/>
       <div className="issues">
         {
             issues.map(issue=><IssuesItem {...issue}/>)
