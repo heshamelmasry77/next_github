@@ -20,8 +20,11 @@ const IssuesItem = ({ user, title, updated_at, ...issue }) => {
                     <Avatar src={user.avatar_url} shape="square" size={50} />
                 </div>
                 <div className="main-info">
-                    <h6><span>{title}</span></h6>
-
+                    <h6>
+                        <span>{title}</span>
+                        {issue.labels.map(label=><Label {...label} key={label.id}/>)}
+                    </h6>
+                    
                     <p className="sub-info">
                         <span>Upadted at {getLastUpdated(updated_at)}</span>
                     </p>
@@ -82,4 +85,24 @@ function IssueDetail({ body, html_url }) {
          }    
         `}</style>
     </div>)
+}
+
+
+function Label({color,name}){
+    return(
+        <>
+        <span className="label" style={{background:`#${color}`}}>
+            {name}
+        </span>
+        <style jsx>{`
+            .label{
+                display:inline-block;
+                line-height:20px;
+            }  
+            .label{
+                margin-left:10px;
+            }  
+        `}</style>
+        </>
+    )
 }
